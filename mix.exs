@@ -23,7 +23,9 @@ defmodule Play.MixProject do
     [
       {:exsync, "~> 0.2", only: :dev},
       {:benchee, "~> 1.0", only: [:dev, :test]},
-      {:memoize, "~> 1.4"}
+      {:memoize, "~> 1.4"},
+      {:nx, "~> 0.2"},
+      {:exla, "~> 0.2"}
     ]
   end
 end

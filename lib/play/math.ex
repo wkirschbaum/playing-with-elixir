@@ -1,5 +1,6 @@
 defmodule Play.Math do
   use Memoize
+  import Nx.Defn
 
   defmacro say({:+, _, [lhs, rhs]}) do
     quote do
@@ -123,10 +124,26 @@ defmodule Play.Math do
   end
 
   def fib_v5(num, {a, b, c}, count \\ 0) when num > 0 do
-    if count < num do
-      fib_v5(num, {b, c, b + c}, count + 1)
-    else
-      a
-    end
+    if count < num, do: fib_v5(num, {b, c, b + c}, count + 1), else: a
+  end
+
+  def fib_v6(num) do
+    Nx.tensor([[1, 1], [1, 0]])
+    |> Nx.LinAlg.matrix_power(num - 1)
+    |> Nx.dot(Nx.tensor([1, 0]))
+    |> then(fn t -> t[0] end)
+    |> Nx.to_number()
+  end
+
+  def fib_v7(num) do
+    do_fib_v7(num: num - 1)
+    |> then(fn t -> t[0] end)
+    |> Nx.to_number()
+  end
+
+  defn do_fib_v7(opts \\ []) do
+    Nx.tensor([[1, 1], [1, 0]])
+    |> Nx.LinAlg.matrix_power(opts[:num])
+    |> Nx.dot(Nx.tensor([1, 0]))
   end
 end
