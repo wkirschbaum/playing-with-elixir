@@ -31,14 +31,22 @@ defmodule Play.MathTest do
   describe "fib" do
     @tag timeout: :timer.minutes(5)
     test "large number" do
-      Benchee.run(%{
-        "v1" => fn input -> Math.fib_v1(input) end,
-        "v3" => fn input -> Math.fib_v3(input) end
-                  },
-        inputs: %{"small" => 1, "medium" => 1_000, "large" => 100_000},
+      assert Math.fib_v1(20) == Math.fib_v2(20)
+      assert Math.fib_v2(20) == Math.fib_v3(20)
+      assert Math.fib_v3(20) == Math.fib_v4(20)
+      assert Math.fib_v4(20) == Math.fib_v5(20)
+
+      Benchee.run(
+        %{
+          # "v1" => fn input -> Math.fib_v1(input) end,
+          # "v2" => fn input -> Math.fib_v2(input) end,
+          "v3" => fn input -> Math.fib_v3(input) end,
+          "v4" => fn input -> Math.fib_v4(input) end,
+          "v5" => fn input -> Math.fib_v5(input) end
+        },
+        inputs: %{"small" => 1, "medium" => 1_000, "large" => 100_000, "xlarge" => 200_000},
         after_each: fn _input -> Memoize.invalidate(Play.Math, :fib_v1) end
       )
-
     end
   end
 end

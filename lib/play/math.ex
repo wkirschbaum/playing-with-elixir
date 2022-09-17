@@ -24,6 +24,7 @@ defmodule Play.Math do
   end
 
   defmemo(fact(1), do: 1)
+
   defmemo fact(num) when num > 0 do
     num * fact(num - 1)
   end
@@ -31,7 +32,6 @@ defmodule Play.Math do
   defmemo fib_v1(num) when num > 1 do
     fib_v1(num - 1) + fib_v1(num - 2)
   end
-
 
   def factorial(1), do: 1
 
@@ -67,6 +67,28 @@ defmodule Play.Math do
     fib_v1(num - 1) + fib_v1(num - 2)
   end
 
+  def fib_v2(num) when num > 0 do
+    {:ok, pid} = Agent.start(fn -> %{} end)
+    result = do_fib_v2(num, pid)
+    Agent.stop(pid)
+    result
+  end
+
+  defp do_fib_v2(0, _pid), do: 0
+  defp do_fib_v2(1, _pid), do: 1
+
+  defp do_fib_v2(num, pid) when num > 0 do
+    case Agent.get(pid, fn state -> Map.get(state, num) end) do
+      nil ->
+        val = do_fib_v2(num - 2, pid) + do_fib_v2(num - 1, pid)
+        Agent.update(pid, fn state -> Map.put(state, num, val) end)
+        val
+
+      val ->
+        val
+    end
+  end
+
   def fib_v3(num) when num > 0 do
     :ets.new(:cache, [:public, :set, :named_table, {:read_concurrency, true}])
     result = do_fib_v3(num)
@@ -86,6 +108,25 @@ defmodule Play.Math do
 
       [{_, val}] ->
         val
+    end
+  end
+
+  def fib_v4(num) when num > 0 do
+    Stream.unfold({0, 1}, fn {current, next} ->
+      {current, {next, current + next}}
+    end)
+    |> Enum.at(num)
+  end
+
+  def fib_v5(num) do
+    fib_v5(num, {0, 1, 2}, 1)
+  end
+
+  def fib_v5(num, {a, b, c}, count \\ 0) when num > 0 do
+    if count < num do
+      fib_v5(num, {b, c, b + c}, count + 1)
+    else
+      a
     end
   end
 end
