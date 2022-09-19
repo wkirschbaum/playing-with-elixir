@@ -25,7 +25,8 @@ defmodule Play.MixProject do
       {:benchee, "~> 1.0", only: [:dev, :test]},
       {:memoize, "~> 1.4"},
       {:nx, "~> 0.2"},
-      {:exla, "~> 0.2"}
+      {:exla, "~> 0.2"},
+      {:nimble_csv, "~> 1.2"}
     ]
   end
 end
